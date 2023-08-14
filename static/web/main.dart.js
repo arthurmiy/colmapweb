@@ -41822,7 +41822,8 @@ $R:3,
 $S:52}
 A.aih.prototype={
 $3(a,b,c){var s=b.b.h(0,"url")
-return A.Vu(new A.nz(A.asf(s==null?"":s),null),new A.cU("home",t.kK),"Home")},
+if(s==null)s=""
+return A.Vu(new A.nz(A.asf(s),null),new A.cU("home"+s,t.kK),"Home")},
 $C:"$3",
 $R:3,
 $S:52}
