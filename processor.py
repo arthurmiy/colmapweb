@@ -76,12 +76,24 @@ subprocess.run('''colmap poisson_mesher \
     --output_path '''+DATASET_PATH+'''/dense/meshed-poisson.ply''',shell=True)
 updateProject(sys.argv[n-1],'poisson_mesher','done')
 
-updateProject(sys.argv[n-1],'delaunay_mesher','running')
-subprocess.run('''colmap delaunay_mesher \
-    --input_path '''+DATASET_PATH+'''/dense \
-    --output_path '''+DATASET_PATH+'''/dense/meshed-delaunay.ply''',shell=True)
-updateProject(sys.argv[n-1],'delaunay_mesher','done')
+#convert to LAS
+subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/fused.ply '''+DATASET_PATH+'''/dense/tmp.las''',shell=True)
+#correct LAS
+subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/tmp.las '''+DATASET_PATH+'''/dense/output.las''',shell=True)
 
 
-# subprocess.run('''colmap automatic_reconstructor --workspace_path ''' + DATASET_PATH + ''' --image_path '''+ DATASET_PATH + '''/images --use_gpu=0''')
+#generate potree page
+subprocess.run('''./PotreeConverter_linux_x64/PotreeConverter '''+DATASET_PATH+'''/dense/output.las -o ./htdocs/p --generate-page '''+sys.argv[n-1],shell=True)
 
+
+#open text file in read mode
+text_file = open("./baseaddress", "r")
+ 
+#read whole file to a string
+data = text_file.read()
+ 
+#close file
+text_file.close()
+
+potreeAddress = data+'/p/'+sys.argv[n-1]+'.html'
+updateProject(sys.argv[n-1],'dense_pointcloud_address',potreeAddress)
