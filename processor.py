@@ -12,7 +12,7 @@ def updateProject(name, attribute, value):
 
      with open('./projects/'+name+'/project.json', "w") as jsonFile:
         json.dump(data, jsonFile)
-        
+
 # total arguments
 n = len(sys.argv)
 DATASET_PATH = './projects/'+sys.argv[n-1]
@@ -70,11 +70,6 @@ subprocess.run('''colmap stereo_fusion \
     --output_path '''+DATASET_PATH+'''/dense/fused.ply''',shell=True)
 updateProject(sys.argv[n-1],'stereo_fusion','done')
 
-updateProject(sys.argv[n-1],'poisson_mesher','running')
-subprocess.run('''colmap poisson_mesher \
-    --input_path '''+DATASET_PATH+'''/dense/fused.ply \
-    --output_path '''+DATASET_PATH+'''/dense/meshed-poisson.ply''',shell=True)
-updateProject(sys.argv[n-1],'poisson_mesher','done')
 
 #convert to LAS
 subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/fused.ply '''+DATASET_PATH+'''/dense/tmp.las''',shell=True)
@@ -85,15 +80,30 @@ subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/tmp.las '''+DATASET_
 #generate potree page
 subprocess.run('''./PotreeConverter_linux_x64/PotreeConverter '''+DATASET_PATH+'''/dense/output.las -o ./htdocs/p --generate-page '''+sys.argv[n-1],shell=True)
 
-
+## update potreeaddress
 #open text file in read mode
 text_file = open("./baseaddress", "r")
- 
 #read whole file to a string
 data = text_file.read()
- 
 #close file
 text_file.close()
-
 potreeAddress = data+'/p/'+sys.argv[n-1]+'.html'
 updateProject(sys.argv[n-1],'dense_pointcloud_address',potreeAddress)
+
+
+
+
+updateProject(sys.argv[n-1],'poisson_mesher','running')
+subprocess.run('''colmap poisson_mesher \
+    --input_path '''+DATASET_PATH+'''/dense/fused.ply \
+    --output_path '''+DATASET_PATH+'''/dense/meshed-poisson.ply''',shell=True)
+updateProject(sys.argv[n-1],'poisson_mesher','done')
+
+
+
+
+#generate glb model in correct folder
+subprocess.run('''python converter.py -it ply -et glb -if '''+DATASET_PATH+'''/dense/meshed-poisson.ply -ef ./htdocs/models/'''+sys.argv[n-1]+'.glb',shell=True)
+
+poisson_mesh_address=data+'''models/'''+sys.argv[n-1]+'.glb'
+updateProject(sys.argv[n-1],'poisson_mesh_address',poisson_mesh_address)
