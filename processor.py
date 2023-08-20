@@ -96,14 +96,14 @@ updateProject(sys.argv[n-1],'dense_pointcloud_address',potreeAddress)
 updateProject(sys.argv[n-1],'poisson_mesher','running')
 subprocess.run('''colmap poisson_mesher \
     --input_path '''+DATASET_PATH+'''/dense/fused.ply \
-    --output_path '''+DATASET_PATH+'''/dense/meshed-poisson.ply''',shell=True)
+    --output_path '''+DATASET_PATH+'''/dense/'''+sys.argv[n-1]+'''.ply''',shell=True)
 updateProject(sys.argv[n-1],'poisson_mesher','done')
 
 
 
 
 #generate glb model in correct folder
-subprocess.run('''python converter.py -it ply -et glb -if '''+DATASET_PATH+'''/dense/meshed-poisson.ply -ef ./htdocs/models/'''+sys.argv[n-1]+'.glb',shell=True)
+subprocess.run('''python converter.py -it ply -et glb -if '''+DATASET_PATH+'''/dense/'''+sys.argv[n-1]+'''.ply -ef ./htdocs/models/''',shell=True)
 
 #move las file to download folder
 subprocess.run('mv '+DATASET_PATH+'/dense/'+sys.argv[n-1]+'.las ./htdocs/las/',shell=True)
