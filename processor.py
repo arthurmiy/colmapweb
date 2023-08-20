@@ -74,11 +74,11 @@ updateProject(sys.argv[n-1],'stereo_fusion','done')
 #convert to LAS
 subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/fused.ply '''+DATASET_PATH+'''/dense/tmp.las''',shell=True)
 #correct LAS
-subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/tmp.las '''+DATASET_PATH+'''/dense/output.las''',shell=True)
+subprocess.run('''pdal translate '''+DATASET_PATH+'''/dense/tmp.las '''+DATASET_PATH+'''/dense/'''+sys.argv[n-1]+'''.las''',shell=True)
 
 
 #generate potree page
-subprocess.run('''./PotreeConverter_linux_x64/PotreeConverter '''+DATASET_PATH+'''/dense/output.las -o ./htdocs/p --generate-page '''+sys.argv[n-1],shell=True)
+subprocess.run('''./PotreeConverter_linux_x64/PotreeConverter '''+DATASET_PATH+'''/dense/'''+sys.argv[n-1]+'''.las -o ./htdocs/p --generate-page '''+sys.argv[n-1],shell=True)
 
 ## update potreeaddress
 #open text file in read mode
@@ -105,5 +105,9 @@ updateProject(sys.argv[n-1],'poisson_mesher','done')
 #generate glb model in correct folder
 subprocess.run('''python converter.py -it ply -et glb -if '''+DATASET_PATH+'''/dense/meshed-poisson.ply -ef ./htdocs/models/'''+sys.argv[n-1]+'.glb',shell=True)
 
-poisson_mesh_address=data+'''models/'''+sys.argv[n-1]+'.glb'
+#move las file to download folder
+subprocess.run('mv '+DATASET_PATH+'/dense/'+sys.argv[n-1]+'.las ./htdocs/las/',shell=True)
+
+poisson_mesh_address=data+'''/models/'''+sys.argv[n-1]+'.glb'
 updateProject(sys.argv[n-1],'poisson_mesh_address',poisson_mesh_address)
+updateProject(sys.argv[n-1],'delaunay_mesh_address',data)
