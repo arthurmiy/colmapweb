@@ -18,6 +18,7 @@ n = len(sys.argv)
 DATASET_PATH = './projects/'+sys.argv[n-1]
 os.chdir (os.getcwd())
 
+subprocess.run('''python gps.py -i '''+DATASET_PATH+'''/images -p '''+DATASET_PATH,shell=True)
 
 subprocess.run('''colmap database_creator --database_path '''+DATASET_PATH+'''/database.db''',shell=True)
 
@@ -41,6 +42,18 @@ subprocess.run('''colmap mapper \
     --image_path '''+DATASET_PATH+'''/images \
     --output_path '''+DATASET_PATH+'''/sparse''',shell=True)
 updateProject(sys.argv[n-1],'mapper','done')
+
+
+####################align
+subprocess.run('''colmap model_aligner \
+    --input_path  '''+DATASET_PATH+'''/sparse \
+    --output_path '''+DATASET_PATH+'''/sparse \
+    --ref_images_path  '''+DATASET_PATH+'''/gps.txt \
+    --ref_is_gps 1 \
+    --alignment_type ecef \
+    --robust_alignment 1  \
+    --robust_alignment_max_error 3.0''',shell=True)
+
 
 subprocess.run('''mkdir '''+DATASET_PATH+'''/dense''',shell=True)
 
