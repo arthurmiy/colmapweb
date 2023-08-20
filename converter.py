@@ -56,6 +56,7 @@ def triangulate_object(obj):
 def ply_import_mesh(filepath):
     bpy.ops.import_mesh.ply(
         filepath=str(Path(filepath).resolve()))
+
     
 
 def dae_import_mesh(filepath):
@@ -85,9 +86,11 @@ def obj_export_scene(filepath):
 
 
 def glb_export_scene(filepath):
+    print(filepath)   
     bpy.ops.export_scene.gltf(export_format='GLB', export_colors=True, 
         export_yup=False, 
         filepath=str(Path(filepath).resolve()))
+     
 
 
 def fbx_export_scene(filepath):
@@ -114,7 +117,7 @@ class ExportFun(Enum):
 
 
 def run(import_type, import_function, export_function, import_folder, export_folder, triangulate):
-    for file in glob.glob(import_folder + f"/*.{import_type}"):
+    for file in glob.glob(import_folder):
         clearScene()
         export_file = Path(export_folder).joinpath(Path(file).stem)
         import_function(file)
@@ -155,5 +158,7 @@ else:
 
     import_mesh_folder = str(Path(commands["if"]).resolve())
     export_mesh_folder = str(Path(commands["ef"]).resolve())
+
+
     
     run(import_type, import_function, export_function, import_mesh_folder, export_mesh_folder, traingulate)
