@@ -45,14 +45,14 @@ updateProject(sys.argv[n-1],'mapper','done')
 
 
 ####################align
+subprocess.run('''mkdir '''+DATASET_PATH+'''/sparse/1''',shell=True)
 subprocess.run('''colmap model_aligner \
-    --input_path  '''+DATASET_PATH+'''/sparse \
-    --output_path '''+DATASET_PATH+'''/sparse \
+    --input_path  '''+DATASET_PATH+'''/sparse/0 \
+    --output_path '''+DATASET_PATH+'''/sparse/1 \
     --ref_images_path  '''+DATASET_PATH+'''/gps.txt \
     --ref_is_gps 1 \
-    --alignment_type ecef \
-    --robust_alignment 1  \
-    --robust_alignment_max_error 3.0''',shell=True)
+    --alignment_type custom \
+    --alignment_max_error 3.0''',shell=True)
 
 
 subprocess.run('''mkdir '''+DATASET_PATH+'''/dense''',shell=True)
@@ -60,7 +60,7 @@ subprocess.run('''mkdir '''+DATASET_PATH+'''/dense''',shell=True)
 updateProject(sys.argv[n-1],'image_undistorter','running')
 subprocess.run('''colmap image_undistorter \
     --image_path '''+DATASET_PATH+'''/images \
-    --input_path '''+DATASET_PATH+'''/sparse/0 \
+    --input_path '''+DATASET_PATH+'''/sparse/1 \
     --output_path '''+DATASET_PATH+'''/dense \
     --output_type COLMAP \
     --max_image_size 2000''',shell=True)
